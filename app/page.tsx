@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main className="py-4">
       <Typography variant="h3" component="h1" align="center" gutterBottom>
-        Product Grid
+        Webskitters NextJs Coding Assignment
       </Typography>
       <ProductGrid />
     </main>

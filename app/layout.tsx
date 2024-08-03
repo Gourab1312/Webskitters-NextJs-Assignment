@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Web Skitters NextJs Assignment',
+  title: 'Webskitters NextJs Assignment',
   description: 'This is an assignment for the role of Fullstack Developer in Webskitters using NextJs',
 }
 
