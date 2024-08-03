@@ -7,6 +7,8 @@ interface ProductCellProps {
   isVisible: boolean;
 }
 
+// only taking product and isVisible from the grid parent and displaying data or black background based on that
+
 const ProductCell: React.FC<ProductCellProps> = ({ product, isVisible}) => {
   return (
     <Card

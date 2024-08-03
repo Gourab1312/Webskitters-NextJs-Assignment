@@ -14,6 +14,7 @@ const ProductGrid: React.FC = () => {
   const [focusedCell, setFocusedCell] = useState<number | null>(null);
   const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+//   fetching the data when the page is mounted
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -28,6 +29,7 @@ const ProductGrid: React.FC = () => {
     fetchProducts();
   }, []);
 
+//   based on clicks of the individual elements we are updating which one should remain black and which should disclose the product and the name
   const handleCellClick = (index: number) => {
     setVisibleCells((prev) => {
       const newVisibleCells = [...prev];
@@ -66,6 +68,7 @@ const ProductGrid: React.FC = () => {
     [focusedCell]
   );
 
+//   adding a kewdown eventlistener and removing it when the component unmounts, so that we can manipulate which of the elements can be the focused element
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -73,20 +76,24 @@ const ProductGrid: React.FC = () => {
     };
   }, [handleKeyDown]);
 
+//   using useref to get the dom access of the elements and focus the one whose index is matching
   useEffect(() => {
     if (focusedCell !== null) {
       cellRefs.current[focusedCell]?.focus();
     }
   }, [focusedCell]);
 
+//   transferring the data after making the index a string using the dataTransfer method with setting the data in plain text mode
   const handleDragStart = (e: React.DragEvent, index: number) => {
     e.dataTransfer.setData("text/plain", index.toString());
   };
 
+//   preventing the default behaviour of selecting texts when the dragging happeens
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
+//   getting the index of the target element and interchanging the content of both and using set products to set the new product array that will reflect the exchange in the dom
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
     const sourceIndex = parseInt(e.dataTransfer.getData("text/plain"));
