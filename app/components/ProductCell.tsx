@@ -5,13 +5,11 @@ import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 interface ProductCellProps {
   product: Product | null;
   isVisible: boolean;
-  onClick: () => void;
 }
 
-const ProductCell: React.FC<ProductCellProps> = ({ product, isVisible, onClick }) => {
+const ProductCell: React.FC<ProductCellProps> = ({ product, isVisible}) => {
   return (
     <Card
-      onClick={onClick}
       sx={{
         width: '100%',
         height: 200,
@@ -34,14 +32,13 @@ const ProductCell: React.FC<ProductCellProps> = ({ product, isVisible, onClick }
             sx={{ maxWidth: '100%', maxHeight: 100, objectFit: 'contain', marginBottom: 1 }}
           />
           <CardContent sx={{ padding: 1 }}>
-            <Typography variant="body2" align="center" noWrap>
+            <Typography variant="body2" align="center">
               {product.title}
             </Typography>
           </CardContent>
         </>
       ) : (
         <CardContent sx={{ padding: 1 }}>
-          <Typography variant="body2">Click to reveal</Typography>
         </CardContent>
       )}
     </Card>
