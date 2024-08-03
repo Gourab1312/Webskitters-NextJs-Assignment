@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import { Product } from "../../types/Product";
 import ProductCell from "./ProductCell";
@@ -12,6 +12,7 @@ const ProductGrid: React.FC = () => {
     Array(20).fill(false)
   );
   const [focusedCell, setFocusedCell] = useState<number | null>(null);
+  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -38,26 +39,29 @@ const ProductGrid: React.FC = () => {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-    event.preventDefault();
+      event.preventDefault();
       if (focusedCell === null) return;
 
+      let newFocusedCell = focusedCell;
       const row = Math.floor(focusedCell / 5);
       const col = focusedCell % 5;
 
       switch (event.key) {
         case "ArrowUp":
-          if (row > 0) setFocusedCell(focusedCell - 5);
+          if (row > 0) setFocusedCell((newFocusedCell -= 5));
           break;
         case "ArrowDown":
-          if (row < 3) setFocusedCell(focusedCell + 5);
+          if (row < 3) setFocusedCell((newFocusedCell += 5));
           break;
         case "ArrowLeft":
-          if (col > 0) setFocusedCell(focusedCell - 1);
+          if (col > 0) setFocusedCell((newFocusedCell -= 1));
           break;
         case "ArrowRight":
-          if (col < 4) setFocusedCell(focusedCell + 1);
+          if (col < 4) setFocusedCell((newFocusedCell += 1));
           break;
       }
+
+      setFocusedCell(newFocusedCell);
     },
     [focusedCell]
   );
@@ -68,6 +72,12 @@ const ProductGrid: React.FC = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyDown]);
+
+  useEffect(() => {
+    if (focusedCell !== null) {
+      cellRefs.current[focusedCell]?.focus();
+    }
+  }, [focusedCell]);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     e.dataTransfer.setData("text/plain", index.toString());
@@ -96,25 +106,38 @@ const ProductGrid: React.FC = () => {
       sx={{ flexGrow: 1, padding: 2 }}
     >
       {products.length > 0 ? (
-        <Grid className="w-full max-w-[1440px] px-6 lg:px-12" container spacing={2}>
+        <Grid
+          className="w-full max-w-[1440px] px-6 lg:px-12"
+          spacing={2}
+          container
+        >
           {products.map((product, index) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              lg={2.4}
-              key={product.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, index)}
-              onClick={() => handleCellClick(index)}
-            >
-              <ProductCell
-                product={product}
-                isVisible={visibleCells[index]}
-              />
+            <Grid item xs={12} sm={6} md={4} lg={2.4} key={product.id}>
+              <div
+                ref={(el: HTMLDivElement | null) => {
+                  cellRefs.current[index] = el;
+                }}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, index)}
+                onClick={() => handleCellClick(index)}
+                tabIndex={0}
+                className={`
+                  w-full rounded relative cursor-pointer
+                  ${
+                    focusedCell === index
+                      ? "outline outline-2 outline-gray-500"
+                      : ""
+                  }
+                  focus:outline focus:outline-2 focus:outline-yellow-500
+                `}
+              >
+                <ProductCell
+                  product={product}
+                  isVisible={visibleCells[index]}
+                />
+              </div>
             </Grid>
           ))}
         </Grid>
